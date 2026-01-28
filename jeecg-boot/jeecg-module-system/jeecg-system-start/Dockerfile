@@ -11,7 +11,8 @@ WORKDIR /jeecg-boot
 EXPOSE 8080
 
 #ADD ./src/main/resources/jeecg ./config/jeecg
-ADD ./target/jeecg-system-start-3.9.1.jar ./
+#ADD ./target/jeecg-system-start-3.9.1.jar ./
+ADD ./jeecg-boot/jeecg-module-system/jeecg-system-start/target/jeecg-system-start-3.9.1.jar ./
 
 RUN mkdir -p /jeecg-boot/config
 

@@ -18,14 +18,14 @@ services:
       --max_allowed_packet=128M
       --default-authentication-plugin=caching_sha2_password
     ports:
-      - 13306:3306
+      - 3306:3306
     networks:
       - jeecg-boot
 
   jeecg-boot-redis:
     image: registry.cn-hangzhou.aliyuncs.com/jeecgdocker/redis:5.0
-    # ports:
-    #   - 3792:6379
+    ports:
+      - 6379:6379
     restart: always
     hostname: jeecg-boot-redis
     container_name: jeecg-boot-redis
@@ -47,7 +47,11 @@ services:
       
   jeecg-boot-system:
     build:
-      context: ./jeecg-boot/jeecg-module-system/jeecg-system-start
+      #context: ./jeecg-boot/jeecg-module-system/jeecg-system-start
+      context: .  # 将上下文设为项目根目录
+      dockerfile: ./jeecg-boot/jeecg-module-system/jeecg-system-start/Dockerfile
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
     restart: on-failure
     depends_on:
       - jeecg-boot-mysql
@@ -57,6 +61,8 @@ services:
     hostname: jeecg-boot-system
     ports:
       - 8080:8080
+      - 5005:5005  # <--- 新增：暴露调试端口
+    command: sh -c "sleep 10; java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -Dfile.encoding=UTF-8 -Djava.security.egd=file:/dev/./urandom -jar jeecg-system-start-3.9.1.jar"
     networks:
       - jeecg-boot
   jeecg-vue:
